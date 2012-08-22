@@ -136,73 +136,34 @@ function combineAndGetFriendsLocation(data)
 
 function combineUserLocation()
 {
-    //var globeData = [];
     var tmpdata = [];
-    //var x = 0;
     for (var key in friendsdata){
         var User = friendsdata[key];
-//console.log("User:");
-//console.log(User);
-
         if(User.current_location != undefined) {
             var ucl = User.current_location;
-//console.log("User.current_location:");
-//console.log(ucl);
-
             var locKey = ucl.id;
-
 	    if(locKey in locationdata){
             var loc = locationdata[locKey];
-
-            //if(loc != undefined){
-//console.log("Location:");
-//console.log(loc);
-
 		tmpdata.push((loc.latitude));
                 tmpdata.push((loc.longitude));
-		tmpdata.push(0.01);
-		
-		//tmpdata.push("42");
-		//tmpdata.push(User.uid);
-
-            }else{
-//console.log("Location: undefined");
-	    }
-        }else if(User.hometown_location != undefined){
-	    var ucl = User.hometown_location;
-//console.log("User.hometown_location:");
-//console.log(ucl);
-
-            var locKey = ucl.id;
-
-	    if(locKey in locationdata){
-            var loc = locationdata[locKey];
-
-            //if(loc != undefined){
-//console.log("HometownLocation:");
-//console.log(loc);
-
-		tmpdata.push((loc.latitude));
-                tmpdata.push((loc.longitude));
-		tmpdata.push(0.08);
-		//tmpdata.push("1");
-		//tmpdata.push(User.uid);
-		//tmpdata.push(User.name);
-
-            }else{
-//console.log("Location: undefined");
-	    }
-
-        }else{
-//console.log("User.current_location := undefined");
+		tmpdata.push(0);
+		tmpdata.push(0.5);
+            }
         }
-//     x++;
+        if(User.hometown_location != undefined){
+	    var ucl = User.hometown_location;
+            var locKey = ucl.id;
+	    if(locKey in locationdata){
+            var loc = locationdata[locKey];
+		tmpdata.push((loc.latitude));
+                tmpdata.push((loc.longitude));
+		tmpdata.push(0);
+		tmpdata.push(1);
+            }
+
+        }
     }
-
    var globeData = [ "Locations", tmpdata ];
- 
-   //console.log(JSON.stringify(globeData);
-
    renderGlobe([globeData]);
 }
 
@@ -260,7 +221,7 @@ function renderGlobe(data)
 
 
             for (var i=0;i<data.length;i++) {
-              globe.addData(data[i][1], {format: 'magnitude'});
+              globe.addData(data[i][1], {format: 'legend'});
               //globe.addData(data[i][1], {format: 'legend', name: data[i][0], animated: true});
 
 		/*globe._baseGeometry = new THREE.Geometry();

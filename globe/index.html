@@ -1,20 +1,27 @@
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html> 
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-	<link href="style.css" rel="stylesheet">    
-	<title>Facebook-WebGL-Globe</title>
+    <script type="text/javascript" src=http"//connect.facebook.net/en_US/all.js"></script>
   </head>
-  <body>	
-	<div class="fb-login-button" data-show-faces="false" data-width="200" data-max-rows="1" scope="user_checkins,friends_checkins,user_hometown,friends_hometown,user_location,friends_location,user_photos,friends_photos, user_relationships,friends_relationships,user_status,friends_status"></div>
-        <a href="#" onclick="getFriendsData();return false;">Get Friends</a>  
-   <p></p>
+  <body>
+  <div id="fb-root"></div>
+
+  <div class="fb-login-button" data-show-faces="false" data-width="200" data-max-rows="1"  scope="user_checkins,friends_checkins,user_hometown,friends_hometown,user_location,friends_location,user_photos,friends_photos, user_relationships,friends_relationships,user_status,friends_status"></div>
+
+  <a href="#" onclick="getFriendsData();return false;">Get Friends</a>  
+
   <div id="container"></div>
+  <div id="name"></div>
+
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.6.min.js"></script>
   <script type="text/javascript" src="/globe/third-party/Three/ThreeWebGL.js"></script>
   <script type="text/javascript" src="/globe/third-party/Three/ThreeExtras.js"></script>
   <script type="text/javascript" src="/globe/third-party/Three/RequestAnimationFrame.js"></script>
   <script type="text/javascript" src="/globe/third-party/Three/Detector.js"></script>
   <script type="text/javascript" src="/globe/third-party/Tween.js"></script>
   <script type="text/javascript" src="/globe/globe.js"></script>
-  <script src="main.js" type="text/javascript"></script>
+  <script type="text/javascript" src="main.js"></script>
+    
   </body>
 </html>

@@ -1,5 +1,5 @@
 
-var APPID = '226922067431182' 
+var APPID = '226922067431182'; 
 
 // ---------------------------------------------------------------------------------
 //  Stuff needed to connect to the FB API and Register Events and stuff
@@ -10,14 +10,12 @@ window.fbAsyncInit = function() {
 
     FB.init({
             appId: APPID,
-            status: true, 
-            cookie: true, 
-            xfbml: true
-        });
+            status: true,
+            cookie: true,
+            xfbml:  true,
+            reloadIfSessionStateChanged: true
+    });
 
-    /*
-     *  Register Events 
-     */
     FB.Event.subscribe('auth.login', function(response) {
         login();
     });
@@ -32,12 +30,8 @@ window.fbAsyncInit = function() {
         }
     });*/
 
-
 };
 
-/*
- * Load FB Javascript 
- */
 (function() {
     var fbroot = document.createElement('div');
     fbroot.setAttribute('id','fb-root');
@@ -48,6 +42,8 @@ window.fbAsyncInit = function() {
     document.body.appendChild(fbroot);
     fbroot.appendChild(e);
 }());
+
+
 
 // ---------------------------------------------------------------------------------
 // Some neat Function do do suff 
@@ -77,10 +73,7 @@ function fqlQuery(fqlQueryString,callbackFunction)
 
 function getFriendsData()
 {
-    //document.getElementById('name').innerHTML = "Waiting for DATA ...<br/>";
     var q =  'SELECT uid,name,pic_square,status,hometown_location,current_location FROM user WHERE uid IN (SELECT uid2 FROM friend WHERE uid1 = me())';
-    //q =  'SELECT uid,name,pic_square,status,hometown_location,current_location FROM user WHERE uid = 100001218139843';
-    
     fqlQuery(q,combineAndGetFriendsLocation);
 }
 
@@ -108,7 +101,8 @@ var locationdata = {};
 function combineAndGetFriendsLocation(data)
 {
     var clocids = "";
-//console.log("You have " + data.length + " Friends");
+    //console.log("You have " + data.length + " Friends");
+
     //document.getElementById('name').innerHTML = "";
     for (var i=0; i<data.length; i++) {
         //renderFriendData(data[i]);
@@ -119,7 +113,6 @@ function combineAndGetFriendsLocation(data)
         if(data[i].current_location.id != undefined 
          && data[i].current_location.id != null){
           clocids +=  ","+ data[i].current_location.id;
-      // alert(friendsdata[data[i].uid].name);
           }
         }
     }
@@ -165,9 +158,12 @@ function combineUserLocation()
 //console.log("Location:");
 //console.log(loc);
 
-		tmpdata.push(parseInt(loc.latitude));
-                tmpdata.push(parseInt(loc.longitude));
-		tmpdata.push(0.3);
+		tmpdata.push((loc.latitude));
+                tmpdata.push((loc.longitude));
+		tmpdata.push(0.01);
+		
+		//tmpdata.push("42");
+		//tmpdata.push(User.uid);
 
             }else{
 //console.log("Location: undefined");
@@ -186,9 +182,12 @@ function combineUserLocation()
 //console.log("HometownLocation:");
 //console.log(loc);
 
-		tmpdata.push(parseInt(loc.latitude));
-                tmpdata.push(parseInt(loc.longitude));
-		tmpdata.push(0.3);
+		tmpdata.push((loc.latitude));
+                tmpdata.push((loc.longitude));
+		tmpdata.push(0.08);
+		//tmpdata.push("1");
+		//tmpdata.push(User.uid);
+		//tmpdata.push(User.name);
 
             }else{
 //console.log("Location: undefined");
@@ -201,6 +200,8 @@ function combineUserLocation()
     }
 
    var globeData = [ "Locations", tmpdata ];
+ 
+   //console.log(JSON.stringify(globeData);
 
    renderGlobe([globeData]);
 }
@@ -209,10 +210,11 @@ function combineUserLocation()
 
 function renderGlobe(data)
 {
+	//data = globedata;
     if(!Detector.webgl){
       Detector.addGetWebGLMessage();
     } else {      
-      //console.log(globeData);
+      //console.log(data);
       //var years = ['1990','1995','2000'];
       var container = document.getElementById('container');
       var globe = new DAT.Globe(container);
@@ -243,11 +245,32 @@ function renderGlobe(data)
         //if (xhr.readyState === 4) {
           //if (xhr.status === 200) {
             //var data = JSON.parse(xhr.responseText);
-            window.data = data;
+            //window.data = data;
             //for (i=0;i<data.length;i++) {
+
+		/*$.getJSON("01-2009.js", function(adata){
+
+			globe.addData(adata[1], {format: 'magnitude'});
+
+			globe.createPoints();
+
+			// Begin animation
+			//globe.animate();
+		});*/
+
+
             for (var i=0;i<data.length;i++) {
-              globe.addData(data[i][1], {format: 'magnitude', name: data[i][0], animated: true});
-             } 
+              globe.addData(data[i][1], {format: 'magnitude'});
+              //globe.addData(data[i][1], {format: 'legend', name: data[i][0], animated: true});
+
+		/*globe._baseGeometry = new THREE.Geometry();
+    		var c = new THREE.Color();
+    		c.setHSV( ( 0.6 - ( data[i][2] * 0.5 ) ), 1.0, 1.0 );
+		var subgeo = new THREE.Geometry();
+	      globe.addPoint(data[i][0],data[i][1],,c,subgeo);
+		globe._baseGeometry = subgeo;
+		*/
+            } 
             globe.createPoints();
             //settime(globe,0)();
             globe.animate();
@@ -258,7 +281,7 @@ function renderGlobe(data)
     } // else 
 }
 
-/*function renderFriendData(data)
+function renderFriendData(data)
 {
     var txt= '';
     txt += '<div style="border:3px solid black;float:left;padding:3px;margin:4px;text-align:center;width:180px;" >' + data.name + "<br />";
@@ -276,7 +299,7 @@ function renderGlobe(data)
     }
     txt += '</div>';
     document.getElementById('name').innerHTML += txt;
-}*/
+}
 
 // ---------------------------------------------------------------------------------
 //  Other stuff not needed at the Momenet 

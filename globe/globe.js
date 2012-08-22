@@ -141,6 +141,7 @@ DAT.Globe = function(container, colorFn) {
     mesh.updateMatrix();
     sceneAtmosphere.addObject(mesh);
 
+    //geometry = new THREE.Cube(0.75, 0.75, 1, 1, 1, 1, null, false, { px: true,
     geometry = new THREE.Cube(0.75, 0.75, 1, 1, 1, 1, null, false, { px: true,
           nx: true, py: true, ny: true, pz: false, nz: true});
 
@@ -158,7 +159,7 @@ DAT.Globe = function(container, colorFn) {
     renderer.setClearColorHex(0x000000, 0.0);
     renderer.setSize(w, h);
 
-    renderer.domElement.style.position = 'absolute';
+    renderer.domElement.style.position = 'relative';
 
     container.appendChild(renderer.domElement);
 
@@ -182,41 +183,44 @@ DAT.Globe = function(container, colorFn) {
   addData = function(data, opts) {
     var lat, lng, size, color, i, step, colorFnWrapper;
 
-    opts.animated = opts.animated || false;
-    this.is_animated = opts.animated;
-    opts.format = opts.format || 'magnitude'; // other option is 'legend'
+    //opts.animated = opts.animated || false;
+    //this.is_animated = opts.animated;
+    //opts.format = opts.format || 'magnitude'; // other option is 'legend'
     //console.log(opts.format);
-    if (opts.format === 'magnitude') {
+    //if (opts.format === 'magnitude') {
       step = 3;
       colorFnWrapper = function(data, i) { return colorFn(data[i+2]); }
-    } else if (opts.format === 'legend') {
+   /* } else if (opts.format === 'legend') {
+      //alert("globe legend selected");
       step = 4;
       colorFnWrapper = function(data, i) { return colorFn(data[i+3]); }
     } else {
       throw('error: format not supported: '+opts.format);
-    }
+    }*/
 
-    if (opts.animated) {
-      if (this._baseGeometry === undefined) {
+    //if (opts.animated) {
+      //if (this._baseGeometry === undefined) {
+	//alert("_baseGeometry === undefined");
         this._baseGeometry = new THREE.Geometry();
+
         for (i = 0; i < data.length; i += step) {
           lat = data[i];
           lng = data[i + 1];
-//        size = data[i + 2];
-          color = colorFnWrapper(data,i);
-          size = 0;
+         size = data[i + 2];
+        color = colorFnWrapper(data,i);
+      size = size*200;
           addPoint(lat, lng, size, color, this._baseGeometry);
         }
-      }
-      if(this._morphTargetId === undefined) {
+      //}
+      /*if(this._morphTargetId === undefined) {
         this._morphTargetId = 0;
       } else {
         this._morphTargetId += 1;
       }
-      opts.name = opts.name || 'morphTarget'+this._morphTargetId;
-    }
-    var subgeo = new THREE.Geometry();
-    for (i = 0; i < data.length; i += step) {
+      opts.name = opts.name || 'morphTarget'+this._morphTargetId;*/
+    //}
+    //var subgeo = new THREE.Geometry();
+    /*`for (i = 0; i < data.length; i += step) {
       lat = data[i];
       lng = data[i + 1];
       color = colorFnWrapper(data,i);
@@ -224,11 +228,15 @@ DAT.Globe = function(container, colorFn) {
       size = size*200;
       addPoint(lat, lng, size, color, subgeo);
     }
+   
     if (opts.animated) {
-      this._baseGeometry.morphTargets.push({'name': opts.name, vertices: subgeo.vertices});
+    */
+
+      //this._baseGeometry.morphTargets.push({'name': opts.name, vertices: subgeo.vertices});
+   /*
     } else {
       this._baseGeometry = subgeo;
-    }
+    }*/
 
   };
 
@@ -263,6 +271,8 @@ DAT.Globe = function(container, colorFn) {
   function addPoint(lat, lng, size, color, subgeo) {
     var phi = (90 - lat) * Math.PI / 180;
     var theta = (180 - lng) * Math.PI / 180;
+
+	/* WARUM definiert der ARsch den Globe Radius nicht Global !!!!!! */
 
     point.position.x = 200 * Math.sin(phi) * Math.cos(theta);
     point.position.y = 200 * Math.cos(phi);
@@ -415,6 +425,7 @@ DAT.Globe = function(container, colorFn) {
   });
 
   this.addData = addData;
+  this.addPoint = addPoint;
   this.createPoints = createPoints;
   this.renderer = renderer;
   this.scene = scene;

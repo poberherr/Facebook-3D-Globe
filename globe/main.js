@@ -100,7 +100,7 @@ var locationdata = {};
 
 function combineAndGetFriendsLocation(data)
 {
-    var clocids = "";
+    var clocids = [];
     //console.log("You have " + data.length + " Friends");
 
     //document.getElementById('name').innerHTML = "";
@@ -112,25 +112,29 @@ function combineAndGetFriendsLocation(data)
 
         if(data[i].current_location.id != undefined 
          && data[i].current_location.id != null){
-          clocids +=  ","+ data[i].current_location.id;
+          clocids.push(data[i].current_location.id);
           }
         }
     }
 
 
+   //clocids = $.unique(clocids);
+   //console.log(clocids.toString());
+
    //alert(clocids.substring(1));
-   var q = 'SELECT page_id,name,longitude,latitude FROM place WHERE page_id IN (' + clocids.substring(1) + ")";
+   var q = 'SELECT page_id,name,longitude,latitude FROM place WHERE page_id IN (' + clocids.toString() + ")";
 //console.log(q);
    fqlQuery(q,
      function(data){
     // alert(JSON.stringify(data2));
     for (var i=0; i<data.length; i++) {
-      //console.log("blub:" + typeof(data[i].page_id));
           locationdata[data[i].page_id] = data[i];
     }
         combineUserLocation();
      }
    );
+
+
 }
 
 
@@ -163,6 +167,7 @@ function combineUserLocation()
 
         }
     }
+  //console.log(tmpdata);
    var globeData = [ "Locations", tmpdata ];
    renderGlobe([globeData]);
 }
@@ -199,7 +204,7 @@ function renderGlobe(data)
         y.addEventListener('mouseover', settime(globe,i), false);
       }*/
       //var xhr;
-      TWEEN.start();
+      //TWEEN.start();
       //xhr = new XMLHttpRequest();
       //xhr.open('GET', '/globe/population909500.json', true);
       //xhr.onreadystatechange = function(e) {

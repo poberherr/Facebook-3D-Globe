@@ -39,19 +39,23 @@
 
 		<script>
 
-			function getSphereCoords(radius,latitude,longitude){
+			function getSphereCoords(radius_of_world,lat,lng){
 
-				var sin_lat = Math.sin(latitude);
 
-				var x = radius * sin_lat * Math.cos(longitude);
-				var y = radius * sin_lat * Math.sin(longitude);
-                                var z = radius * Math.cos(latitude);
+				var phi = (90 - lat) * Math.PI / 180;
+				var theta = (180 - lng) * Math.PI / 180;
+
+				var x = radius_of_world * Math.sin(phi) * Math.cos(theta);
+				var y = radius_of_world * Math.cos(phi);
+				var z = radius_of_world * Math.sin(phi) * Math.sin(theta);
+
 
 				return [x,y,z];
 			}
 
-			function getLongLati(x,y,z){
-				
+			function getLongLati(x,y,z)
+			{
+
 				var radius = Math.sqrt(x*x+y*y+z*z);
 				var lat = 90 - (Math.acos(y / radius)) * 180 / Math.PI;
 				var lon = ((270 + (Math.atan2(x , z)) * 180 / Math.PI) % 360) -180;
@@ -127,22 +131,35 @@
 				      color: 0xCC0000
 				});
 
-
-			var a = 0;
-			for(var a=-180;a<180;a+=15)
+			var pointNr = 0;
+			for(var a=-180;a<=180;a+=10)
+			//for(var a=0;a<=90;a+=10)
 			{
-			for(var b=-90;b<90;b+=15)
-			{
-
+				
+				/*var marker_mesh = new THREE.Mesh( marker_geo, marker_mat);
+				var tmp = getSphereCoords(200,a,0);
+				marker_mesh.position.x = tmp[0];
+				marker_mesh.position.y = tmp[2];
+				marker_mesh.position.z = tmp[1];
+				console.log("Point Number:" + pointNr);
+				console.log("a: " + a);
+				pointNr++;
+				console.log("x:" + tmp[0] + "y:" + tmp[1] + "z:" +tmp[2]);
+				group.add(marker_mesh);
+				*/
+				/**/
+				for(var b=-90;b<90;b+=10)
+				{
 					var marker_mesh = new THREE.Mesh( marker_geo, marker_mat);
 					var tmp = getSphereCoords(200,a,b);
 					marker_mesh.position.x = tmp[0];
-					marker_mesh.position.y = tmp[2];
-					marker_mesh.position.z = tmp[1];
+					marker_mesh.position.y = tmp[1];
+					marker_mesh.position.z = tmp[2];
 					//console.log("x:" + tmp[0] + "y:" + tmp[1] + "z:" +tmp[2]);
 					group.add(marker_mesh);
 				}
-				}
+				/**/
+			}
 				// shadow
 
 				/*var shadowTexture = new THREE.Texture();

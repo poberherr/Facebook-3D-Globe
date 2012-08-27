@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js canvas - geometry - earth</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				color: #808080;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+
+				background-color: #ffffff;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#info {
+				position: absolute;
+				top: 0px; width: 100%;
+				padding: 5px;
+			}
+
+			a {
+
+				color: #0080ff;
+			}
+
+		</style>
+	</head>
+	<body>
+
+		<div id="container"></div>
+		<div id="info"><a href="http://github.com/mrdoob/three.js" target="_blank">three.js</a> - earth demo</div>
+
+		<script src="three.min.js"></script>
+		<!--script src="js/Stats.js"></script-->
+
+		<script>
+
+			function getSphereCoords(radius,latitude,longitude){
+
+				var sin_lat = Math.sin(latitude);
+
+				var x = radius * sin_lat * Math.cos(longitude);
+				var y = radius * sin_lat * Math.sin(longitude);
+                                var z = radius * Math.cos(latitude);
+
+				return [x,y,z];
+			}
+
+			function getLongLati(x,y,z){
+				
+				var radius = Math.sqrt(x*x+y*y+z*z);
+				var lat = 90 - (Math.acos(y / radius)) * 180 / Math.PI;
+				var lon = ((270 + (Math.atan2(x , z)) * 180 / Math.PI) % 360) -180;
+
+				return [radius,lat,lon];
+			}
+
+
+
+			var x = 0;
+			var y = 0;
+			var z = 1;
+
+			var tmp = getLongLati(x,y,z);
+			//alert(tmp.toString());
+
+			var lat = 75;
+			var lon = 13;
+			var tmp = getSphereCoords(1,lat,lon);
+			//alert(tmp.toString());
+
+			var container, stats;
+			var camera, scene, renderer;
+			var group;
+			var mouseX = 0, mouseY = 0;
+
+			var windowHalfX = window.innerWidth / 2;
+			var windowHalfY = window.innerHeight / 2;
+
+			init();
+			animate();
+
+			function init() {
+
+				container = document.getElementById( 'container' );
+
+				camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 10000 );
+				camera.position.z = 500;
+
+				scene = new THREE.Scene();
+
+				group = new THREE.Object3D();
+				scene.add( group );
+
+				// earth
+
+				var earthTexture = new THREE.Texture();
+				var loader = new THREE.ImageLoader();
+
+				loader.addEventListener( 'load', function ( event ) {
+
+					earthTexture.image = event.content;
+					earthTexture.needsUpdate = true;
+
+				} );
+
+				//loader.load( 'textures/land_ocean_ice_cloud_2048.jpg' );
+
+				var geometry = new THREE.SphereGeometry( 100, 20, 20 );
+				//var material = new THREE.MeshBasicMaterial( { map: earthTexture, overdraw: true } );
+				var material =  new THREE.MeshLambertMaterial(
+    				{
+				      color: 0x00CC00
+				});
+
+				var mesh = new THREE.Mesh( geometry, material );
+				group.add( mesh );
+
+
+				var marker_geo = new THREE.SphereGeometry(3,3,2);
+				var marker_mat = new THREE.MeshLambertMaterial(
+    				{
+				      color: 0xCC0000
+				});
+
+
+			var a = 0;
+			for(var a=-180;a<180;a+=15)
+			{
+			for(var b=-90;b<90;b+=15)
+			{
+
+					var marker_mesh = new THREE.Mesh( marker_geo, marker_mat);
+					var tmp = getSphereCoords(200,a,b);
+					marker_mesh.position.x = tmp[0];
+					marker_mesh.position.y = tmp[2];
+					marker_mesh.position.z = tmp[1];
+					//console.log("x:" + tmp[0] + "y:" + tmp[1] + "z:" +tmp[2]);
+					group.add(marker_mesh);
+				}
+				}
+				// shadow
+
+				/*var shadowTexture = new THREE.Texture();
+				var loader = new THREE.ImageLoader();
+
+				loader.addEventListener( 'load', function ( event ) {
+
+					shadowTexture.image = event.content;
+					shadowTexture.needsUpdate = true;
+
+				} );
+
+				loader.load( 'textures/shadow.png' );
+
+				var geometry = new THREE.PlaneGeometry( 300, 300, 3, 3 );
+				var material = new THREE.MeshBasicMaterial( { map: shadowTexture, overdraw: true } );
+
+				var mesh = new THREE.Mesh( geometry, material );
+				mesh.position.y = - 250;
+				mesh.rotation.x = - Math.PI / 2;
+				group.add( mesh );
+				*/
+
+				renderer = new THREE.CanvasRenderer();
+				//renderer = new THREE.WebGLRenderer();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+				container.appendChild( renderer.domElement );
+
+				/*stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				container.appendChild( stats.domElement );*/
+
+				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+				//
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+			}
+
+			function onWindowResize() {
+
+				windowHalfX = window.innerWidth / 2;
+				windowHalfY = window.innerHeight / 2;
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function onDocumentMouseMove( event ) {
+
+				mouseX = ( event.clientX - windowHalfX );
+				mouseY = ( event.clientY - windowHalfY );
+
+			}
+
+			//
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				render();
+				//stats.update();
+
+			}
+
+			function render() {
+
+				camera.position.x += ( mouseX - camera.position.x ) * 0.05;
+				camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
+				camera.lookAt( scene.position );
+
+				group.rotation.y -= 0.005;
+
+				renderer.render( scene, camera );
+
+			}
+
+
+		</script>
+
+	</body>
+</html>
+
